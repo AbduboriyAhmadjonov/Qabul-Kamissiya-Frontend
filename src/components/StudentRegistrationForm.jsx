@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Save,
   Search,
@@ -164,15 +164,33 @@ const PersonalInfoSection = ({ formData, handleInputChange }) => (
 // Additional Information Section
 const AdditionalInfoSection = ({ formData, handleInputChange }) => {
   const jamOrganOptions = [
-    { value: 'FARGONA_MIB', label: 'FARGONA_MIB' },
-    { value: 'TOSHKENT_MIB', label: 'TOSHKENT_MIB' },
+    { value: 'QORAQALPOQ_RES', label: 'QORAQALPOQ_RES' },
+    { value: 'ANDIJON_MIB', label: 'ANDIJON_MIB' },
+    { value: 'BUXORO_MIB', label: 'BUXORO_MIB' },
+    { value: 'JIZZAX_MIB', label: 'JIZZAX_MIB' },
+    { value: 'QASHQADARYA_MIB', label: 'QASHQADARYA_MIB' },
+    { value: 'NAVOIY_MIB', label: 'NAVOIY_MIB' },
+    { value: 'NAMANGAN_MIB', label: 'NAMANGAN_MIB' },
     { value: 'SAMARQAND_MIB', label: 'SAMARQAND_MIB' },
+    { value: 'SURXONDARYO_MIB', label: 'SURXONDARYO_MIB' },
+    { value: 'SIRDARYA_MIB', label: 'SIRDARYA_MIB' },
+    { value: 'TOSHKENT_SH_MIB', label: 'TOSHKENT_SH_MIB' },
+    { value: 'TOSHKENT_VIL_MIB', label: 'TOSHKENT_VIL_MIB' },
+    { value: 'FARGONA_MIB', label: 'FARGONA_MIB' },
+    { value: 'XORAZM_MIB', label: 'XORAZM_MIB' },
   ];
 
   const mutaxOptions = [
+    { value: 'MVBQQTF', label: 'MVBQQTF' },
     { value: 'XHT', label: 'XHT' },
-    { value: 'OHT', label: 'OHT' },
-    { value: 'BHT', label: 'BHT' },
+    { value: 'XFTPT', label: 'XFTPT' },
+    { value: 'IqXav', label: 'IqXav' },
+    { value: 'AvQTFB', label: 'AvQTFB' },
+    { value: 'QBQT', label: 'QBQT' },
+    { value: 'YXHF', label: 'YXHF' },
+    { value: 'JTSF', label: 'JTSF' },
+    { value: 'MvFR', label: 'MvFR' },
+    { value: 'XHXHT', label: 'XHXHT' },
   ];
 
   const holatiOptions = [
@@ -188,7 +206,8 @@ const AdditionalInfoSection = ({ formData, handleInputChange }) => {
 
   const qaytganOptions = [
     { value: 'YOQ', label: 'YOQ' },
-    { value: 'HA', label: 'HA' },
+    { value: 'BIR', label: 'BIR' },
+    { value: 'IKKI', label: 'IKKI' },
   ];
 
   return (
@@ -313,7 +332,7 @@ const EducationInfoSection = ({ formData, handleInputChange }) => {
 
       <div className="grid grid-cols-2 gap-3">
         <InputField
-          label="SOGHIGI"
+          label="SOG'LIGI"
           name="soghigi"
           value={formData.soghigi}
           onChange={handleInputChange}
@@ -375,23 +394,23 @@ export default function StudentRegistrationForm() {
     ismi: 'ZOKIRJON',
     sharifi: 'UMARQULOVICH',
     tug_sana: '08.06.2003',
-    pas_ser: 'AC',
-    pas_no: '2908599',
-    pinfl: '50806035270022',
+    pas_ser: 'AA',
+    pas_no: '1234567',
+    pinfl: '12345678901234',
     jam_organ: 'FARGONA_MIB',
     mutax: 'XHT',
     holati: 'OK',
-    telefon: '9',
+    telefon: '+998',
     jinsi: 'ERKAK',
     qaytgan: 'YOQ',
     toifasi: 'KBXX_TAVS',
     tav_s_n: 'QK/083618',
-    tav_yili: '2023',
+    tav_yili: '2025',
     utsev: '',
     utsev_yili: '',
     xizmat_joyi: '',
     soghigi: 'OK',
-    ball: '84,60',
+    ball: '60',
     studentId: '931652770 H/Q 52788',
   });
 
