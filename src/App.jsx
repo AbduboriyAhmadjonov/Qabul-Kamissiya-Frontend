@@ -1,7 +1,7 @@
-import StudentRegistrationForm from './components/StudentRegistrationForm';
+import Main from './components/Main';
 
 function App() {
-  return <StudentRegistrationForm />;
+  return <Main />;
 }
 
 export default App;
