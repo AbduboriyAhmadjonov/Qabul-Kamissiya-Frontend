@@ -50,16 +50,16 @@ export default function EducationInfoSection({ formData, handleInputChange }) {
       />
 
       <InputField
-        label="UTSEV"
-        name="utsev"
-        value={formData.utsev}
+        label="LITSEY"
+        name="litsey"
+        value={formData.litsey}
         onChange={handleInputChange}
       />
 
       <InputField
-        label="UTSEV_YILI"
-        name="utsev_yili"
-        value={formData.utsev_yili}
+        label="LITSEY_YILI"
+        name="litsey_yili"
+        value={formData.litsey_yili}
         onChange={handleInputChange}
       />
 

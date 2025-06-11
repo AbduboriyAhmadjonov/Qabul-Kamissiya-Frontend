@@ -6,8 +6,6 @@ import PersonalInfoSection from './Sections/PersonalInfo';
 
 import FormHeader from './Shared/FormHeader';
 import ActionButtons from './Shared/ActionButtons';
-import InputField from './Shared/InputField';
-import PhoneInputField from './Shared/PhoneInputField';
 
 // Main Component
 export default function Main() {
