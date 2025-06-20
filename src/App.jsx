@@ -1,16 +1,3 @@
-// // import Authentification from './Authentification.jsx';
-
-// export default function App() {
-//   return (
-//     <div>
-//       <HeroSection />
-//       {/* <h1 className="justify-center text-center">JXU QABUL KOMISSIYA</h1> */}
-//       {/* <Authentification /> */}
-//     </div>
-//   );
-// }
-
-// src/App.jsx
 import React, { useState, useEffect } from 'react';
 import {
   BrowserRouter as Router,
@@ -279,7 +266,7 @@ const NotFoundPage = () => (
     </p>
     <button
       onClick={() => (window.location.href = '/')}
-      className="mt-8 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+      className="mt-8 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 hover:cursor-pointer transition"
     >
       Go to Homepage
     </button>
