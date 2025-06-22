@@ -15,22 +15,7 @@
 //   const [error, setError] = useState('');
 //   const { register } = useContext(AuthContext);
 
-//   const regions = [
-//     'Toshkent shahri',
-//     'Toshkent viloyati',
-//     'Andijon',
-//     'Buxoro',
-//     'Jizzax',
-//     'Qashqadaryo',
-//     'Navoiy',
-//     'Namangan',
-//     'Samarqand',
-//     'Surxondaryo',
-//     'Sirdaryo',
-//     "Farg'ona",
-//     'Xorazm',
-//     "Qoraqalpog'iston",
-//   ];
+//
 
 //   const handleChange = (e) => {
 //     setFormData({ ...formData, [e.target.name]: e.target.value });

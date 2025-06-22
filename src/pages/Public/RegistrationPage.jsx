@@ -1,7 +1,5 @@
-// src/pages/Public/RegistrationPage.jsx
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-
 import axios from 'axios';
 
 const RegistrationPage = () => {
@@ -11,51 +9,196 @@ const RegistrationPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [city, setCity] = useState(''); // Need to add
-  const [district, setDistrict] = useState(''); // Need to add
+  const [city, setCity] = useState('');
+  const [district, setDistrict] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
-  const [passportNumber, setPassportNumber] = useState(''); // Need to add
-  const [passportSeries, setPassportSeries] = useState(''); // Need to add
+  const [passportNumber, setPassportNumber] = useState('');
+  const [passportSeries, setPassportSeries] = useState('');
+  const [passportJSHSHIR, setPassportJSHSHIR] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [address, setAddress] = useState('');
 
-  const [selectedRegion, setSelectedRegion] = useState('');
-  const [selectedDistrict, setSelectedDistrict] = useState('');
-
-  // Add other candidate fields as per your schema
+  const [errors, setErrors] = useState({});
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
+
+  const cities = {
+    'Toshkent shahri': ['Yunusobod', 'Chilonzor', 'Shayxontohur'],
+    'Toshkent viloyati': ['Zangiota', 'Qibray', 'Chinoz'],
+    Andijon: ['Andijon shahri', 'Asaka', 'Xonobod'],
+    Buxoro: ['Buxoro shahri', 'Gʻijduvon', 'Kogon'],
+    Jizzax: ['Jizzax shahri', 'Zomin', 'Gallaorol'],
+    Qashqadaryo: ['Qarshi', 'Shahrisabz', 'Muborak'],
+    Navoiy: ['Navoiy shahri', 'Karmana', 'Zarafshon'],
+    Namangan: ['Namangan shahri', 'Chortoq', 'Pop'],
+    Samarqand: ['Samarqand shahri', 'Urgut', 'Ishtixon'],
+    Surxondaryo: ['Termiz', 'Denov', 'Sherobod'],
+    Sirdaryo: ['Guliston', 'Yangiyer', 'Sirdaryo'],
+    "Farg'ona": ["Farg'ona shahri", 'Qoʻqon', 'Margʻilon'],
+    Xorazm: ['Urganch', 'Xiva', 'Hazorasp'],
+    "Qoraqalpog'iston": ['Nukus', 'Beruniy', 'Moʻynoq'],
+  };
+
+  // Validation functions
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePhoneNumber = (phone) => {
+    // Uzbekistan phone number format: +998XXXXXXXXX or 998XXXXXXXXX
+    const phoneRegex = /^(\+998|998)?[0-9]{9}$/;
+    return phoneRegex.test(phone.replace(/\s+/g, ''));
+  };
+
+  const validateDate = (dateString) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const minAge = new Date();
+    const maxAge = new Date();
+    minAge.setFullYear(today.getFullYear() - 18); // Minimum 18 years old
+    maxAge.setFullYear(30 + today.getFullYear()); //
+
+    return date <= minAge && date >= maxAge;
+  };
+
+  const validatePassportSeries = (series) => {
+    return /^[A-Z]{2}$/.test(series);
+  };
+
+  const validatePassportNumber = (number) => {
+    return /^[0-9]{7}$/.test(number);
+  };
+
+  const validateJSHSHIR = (jshshir) => {
+    return /^[0-9]{14}$/.test(jshshir);
+  };
+
+  const validatePassword = (password) => {
+    return password.length >= 8;
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    // First Name validation
+    if (!firstName.trim()) {
+      newErrors.firstName = 'First name is required';
+    }
+
+    // Middle Name validation
+    if (!middleName.trim()) {
+      newErrors.middleName = 'Middle name is required';
+    }
+
+    // Last Name validation
+    if (!lastName.trim()) {
+      newErrors.lastName = 'Last name is required';
+    }
+
+    // Email validation
+    if (!email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!validateEmail(email)) {
+      newErrors.email = 'Invalid email address';
+    }
+
+    // Phone validation
+    if (!phoneNumber.trim()) {
+      newErrors.phoneNumber = 'Phone number is required';
+    } else if (!validatePhoneNumber(phoneNumber)) {
+      newErrors.phoneNumber = 'Invalid phone number format. Use +998XXXXXXXXX';
+    }
+
+    // City validation
+    if (!city) {
+      newErrors.city = 'City is required';
+    }
+
+    // District validation
+    if (!district) {
+      newErrors.district = 'District is required';
+    }
+
+    // Date of Birth validation
+    if (!dateOfBirth) {
+      newErrors.dateOfBirth = 'Date of birth is required';
+    } else if (!validateDate(dateOfBirth)) {
+      newErrors.dateOfBirth = `Invalid date of birth: You must be at least 18 years old and have not reached the age of 30`;
+    }
+
+    // Passport Series validation
+    if (!passportSeries.trim()) {
+      newErrors.passportSeries = 'Passport series is required';
+    } else if (!validatePassportSeries(passportSeries)) {
+      newErrors.passportSeries =
+        'Passport series must be 2 uppercase letters (e.g., AB)';
+    }
+
+    // Passport Number validation
+    if (!passportNumber.trim()) {
+      newErrors.passportNumber = 'Passport number is required';
+    } else if (!validatePassportNumber(passportNumber)) {
+      newErrors.passportNumber = 'Passport number must be exactly 7 digits';
+    }
+
+    // JSHSHIR validation
+    if (!passportJSHSHIR.trim()) {
+      newErrors.passportJSHSHIR = 'Passport JSHSHIR is required';
+    } else if (!validateJSHSHIR(passportJSHSHIR)) {
+      newErrors.passportJSHSHIR = 'JSHSHIR must be exactly 14 digits';
+    }
+
+    // Password validation
+    if (!password) {
+      newErrors.password = 'Password is required';
+    } else if (!validatePassword(password)) {
+      newErrors.password = 'Password must be at least 8 characters long';
+    }
+
+    // Confirm Password validation
+    if (!confirmPassword) {
+      newErrors.confirmPassword = 'Password confirmation is required';
+    } else if (password !== confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+
+    // Address validation
+    if (!address.trim()) {
+      newErrors.address = 'Address is required';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
+    setErrors({});
 
-    if (password !== confirmPassword) {
-      setError('Passwords do not match.');
-      return;
-    }
-
-    // Basic date validation (backend should also validate)
-    if (!dateOfBirth) {
-      setError('Date of birth is required.');
+    // Validate form before submission
+    if (!validateForm()) {
+      setError('Please fix the validation errors below.');
       return;
     }
 
     try {
-      const response = await axios.post('/api/candidates', {
-        firstName,
-        middleName,
-        lastName,
-        email,
+      const response = await axios.post('/api/auth/register', {
+        firstName: firstName.trim(),
+        middleName: middleName.trim(),
+        lastName: lastName.trim(),
+        email: email.trim().toLowerCase(),
         password,
-        phoneNumber,
+        phoneNumber: phoneNumber.replace(/\s+/g, ''), // Remove spaces
         city,
         district,
         dateOfBirth,
-        passportNumber,
-        passportSeries,
+        passportId: passportSeries.toUpperCase() + passportNumber,
+        passportJSHSHIR,
+        address: address.trim(),
         role: 'CANDIDATE',
       });
 
@@ -63,17 +206,44 @@ const RegistrationPage = () => {
         setSuccessMessage(
           'Registration successful! You will be redirected to login.'
         );
-        // Optionally auto-login or redirect to login page
         setTimeout(() => navigate('/login'), 2000);
       }
     } catch (err) {
       console.error('Registration failed:', err);
       if (err.response && err.response.data && err.response.data.error) {
         setError(err.response.data.error);
+      } else if (
+        err.response &&
+        err.response.data &&
+        err.response.data.errors
+      ) {
+        // Handle validation errors from backend
+        const backendErrors = {};
+        err.response.data.errors.forEach((error) => {
+          backendErrors[error.path] = error.msg;
+        });
+        setErrors(backendErrors);
+        setError('Please fix the validation errors below.');
       } else {
         setError('Registration failed. Please try again.');
       }
     }
+  };
+
+  const handlePhoneChange = (e) => {
+    let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+    if (value.startsWith('998')) {
+      value = '+' + value;
+    } else if (!value.startsWith('+998') && value.length > 0) {
+      value = '+998' + value;
+    }
+    setPhoneNumber(value);
+  };
+
+  const renderError = (fieldName) => {
+    return errors[fieldName] ? (
+      <p className="text-red-500 text-xs mt-1">{errors[fieldName]}</p>
+    ) : null;
   };
 
   return (
@@ -101,10 +271,14 @@ const RegistrationPage = () => {
                 placeholder="Enter your first name"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                  errors.firstName ? 'border-red-500' : ''
+                }`}
                 required
               />
+              {renderError('firstName')}
             </div>
+
             {/* Last Name */}
             <div>
               <label
@@ -119,29 +293,37 @@ const RegistrationPage = () => {
                 placeholder="Enter your last name"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                  errors.lastName ? 'border-red-500' : ''
+                }`}
                 required
               />
-            </div>
-            {/* Middle Name */}
-            <div>
-              <label
-                className="block text-gray-700 text-sm font-bold mb-2"
-                htmlFor="middleName"
-              >
-                Last Name
-              </label>
-              <input
-                id="middleName"
-                type="text"
-                placeholder="Enter your last name"
-                value={middleName}
-                onChange={(e) => setMiddleName(e.target.value)}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                required
-              />
+              {renderError('lastName')}
             </div>
           </div>
+
+          {/* Middle Name */}
+          <div className="mt-4">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="middleName"
+            >
+              Middle Name
+            </label>
+            <input
+              id="middleName"
+              type="text"
+              placeholder="Enter your middle name"
+              value={middleName}
+              onChange={(e) => setMiddleName(e.target.value)}
+              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                errors.middleName ? 'border-red-500' : ''
+              }`}
+              required
+            />
+            {renderError('middleName')}
+          </div>
+
           {/* Email */}
           <div className="mt-4">
             <label
@@ -156,10 +338,14 @@ const RegistrationPage = () => {
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                errors.email ? 'border-red-500' : ''
+              }`}
               required
             />
+            {renderError('email')}
           </div>
+
           {/* Phone Number */}
           <div className="mt-4">
             <label
@@ -171,20 +357,151 @@ const RegistrationPage = () => {
             <input
               id="phoneNumber"
               type="tel"
-              placeholder="Enter your phone number"
+              placeholder="+998XXXXXXXXX"
               value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              onChange={handlePhoneChange}
+              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                errors.phoneNumber ? 'border-red-500' : ''
+              }`}
               required
             />
+            {renderError('phoneNumber')}
           </div>
+
+          {/* City and District */}
+          <div className="mt-4">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="city"
+            >
+              City
+            </label>
+            <select
+              id="city"
+              value={city}
+              onChange={(e) => {
+                setCity(e.target.value);
+                setDistrict(''); // Reset district when city changes
+              }}
+              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                errors.city ? 'border-red-500' : ''
+              }`}
+              required
+            >
+              <option value="">Select a city</option>
+              {Object.keys(cities).map((cityName) => (
+                <option key={cityName} value={cityName}>
+                  {cityName}
+                </option>
+              ))}
+            </select>
+            {renderError('city')}
+
+            {city && (
+              <div className="mt-4">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="district"
+                >
+                  District
+                </label>
+                <select
+                  id="district"
+                  value={district}
+                  onChange={(e) => setDistrict(e.target.value)}
+                  className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                    errors.district ? 'border-red-500' : ''
+                  }`}
+                  required
+                >
+                  <option value="">Select a district</option>
+                  {cities[city].map((districtName) => (
+                    <option key={districtName} value={districtName}>
+                      {districtName}
+                    </option>
+                  ))}
+                </select>
+                {renderError('district')}
+              </div>
+            )}
+          </div>
+
+          {/* Passport */}
+          <div className="mt-4">
+            <label
+              htmlFor="passport"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              Passport (Series + Number)
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                id="passportSeries"
+                value={passportSeries}
+                onChange={(e) =>
+                  setPassportSeries(
+                    e.target.value.toUpperCase().replace(/[^A-Z]/g, '')
+                  )
+                }
+                placeholder="AB"
+                maxLength={2}
+                className={`w-1/4 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                  errors.passportSeries ? 'border-red-500' : ''
+                }`}
+                required
+              />
+              <input
+                type="text"
+                id="passportNumber"
+                value={passportNumber}
+                onChange={(e) =>
+                  setPassportNumber(e.target.value.replace(/\D/g, ''))
+                }
+                placeholder="1234567"
+                maxLength={7}
+                className={`w-3/4 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                  errors.passportNumber ? 'border-red-500' : ''
+                }`}
+                required
+              />
+            </div>
+            {renderError('passportSeries')}
+            {renderError('passportNumber')}
+          </div>
+
+          {/* Passport JSHSHIR */}
+          <div className="mt-4">
+            <label
+              htmlFor="passportJSHSHIR"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              Passport JSHSHIR (14 digits)
+            </label>
+            <input
+              type="text"
+              id="passportJSHSHIR"
+              value={passportJSHSHIR}
+              onChange={(e) =>
+                setPassportJSHSHIR(e.target.value.replace(/\D/g, ''))
+              }
+              placeholder="12345678901234"
+              maxLength={14}
+              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                errors.passportJSHSHIR ? 'border-red-500' : ''
+              }`}
+              required
+            />
+            {renderError('passportJSHSHIR')}
+          </div>
+
           {/* Password */}
           <div className="mt-4">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
               htmlFor="password"
             >
-              Password
+              Password (min 8 characters)
             </label>
             <input
               id="password"
@@ -192,10 +509,15 @@ const RegistrationPage = () => {
               placeholder="Create a password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                errors.password ? 'border-red-500' : ''
+              }`}
               required
             />
+            {renderError('password')}
           </div>
+
+          {/* Confirm Password */}
           <div className="mt-4">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
@@ -209,10 +531,14 @@ const RegistrationPage = () => {
               placeholder="Confirm your password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                errors.confirmPassword ? 'border-red-500' : ''
+              }`}
               required
             />
+            {renderError('confirmPassword')}
           </div>
+
           {/* Date of Birth */}
           <div className="mt-4">
             <label
@@ -226,9 +552,12 @@ const RegistrationPage = () => {
               type="date"
               value={dateOfBirth}
               onChange={(e) => setDateOfBirth(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                errors.dateOfBirth ? 'border-red-500' : ''
+              }`}
               required
             />
+            {renderError('dateOfBirth')}
           </div>
 
           {/* Full Address */}
@@ -245,14 +574,19 @@ const RegistrationPage = () => {
               rows="3"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                errors.address ? 'border-red-500' : ''
+              }`}
               required
             ></textarea>
+            {renderError('address')}
           </div>
+
           {error && <p className="text-red-500 text-center mt-4">{error}</p>}
           {successMessage && (
             <p className="text-green-500 text-center mt-4">{successMessage}</p>
           )}
+
           <div className="mt-6">
             <button
               type="submit"
@@ -262,6 +596,7 @@ const RegistrationPage = () => {
             </button>
           </div>
         </form>
+
         <p className="text-center text-gray-600 text-sm mt-6">
           Already have an account?{' '}
           <Link to="/login" className="text-blue-600 hover:underline">
@@ -274,476 +609,3 @@ const RegistrationPage = () => {
 };
 
 export default RegistrationPage;
-
-// src/pages/Public/RegistrationPage.jsx
-// import React, { useState } from 'react';
-// import { useNavigate, Link } from 'react-router-dom';
-// import axios from 'axios';
-
-// // Placeholder data for regions and districts. In a real app, this would come from your backend.
-// // We'll keep this simple and manage it locally for now to match the previous structure.
-
-// const RegistrationPage = () => {
-//   // State for all fields
-//   const [firstName, setFirstName] = useState('');
-//   const [lastName, setLastName] = useState('');
-//   const [middleName, setMiddleName] = useState('');
-//   const [email, setEmail] = useState('');
-//   const [password, setPassword] = useState('');
-//   const [confirmPassword, setConfirmPassword] = useState('');
-//   const [phoneNumber, setPhoneNumber] = useState('');
-
-//   // Address state with cascading logic
-//
-//   const [streetAddress, setStreetAddress] = useState(''); // Renamed 'address' to 'streetAddress' for clarity
-
-//   const [dateOfBirth, setDateOfBirth] = useState('');
-//   const [passportNumber, setPassportNumber] = useState('');
-//   const [passportSeries, setPassportSeries] = useState('');
-
-//   const [error, setError] = useState('');
-//   const [successMessage, setSuccessMessage] = useState('');
-//   const navigate = useNavigate();
-
-//   // Logic for available districts based on selected region
-//   const availableDistricts = regionsData[selectedRegion] || [];
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setError('');
-//     setSuccessMessage('');
-
-//     // Basic validation
-//     if (
-//       !firstName ||
-//       !lastName ||
-//       !email ||
-//       !password ||
-//       !confirmPassword ||
-//       !dateOfBirth ||
-//       !selectedRegion ||
-//       !selectedDistrict ||
-//       !streetAddress
-//     ) {
-//       setError('Please fill in all required fields.');
-//       return;
-//     }
-//     if (password !== confirmPassword) {
-//       setError('Passwords do not match.');
-//       return;
-//     }
-//     if (!/\S+@\S+\.\S+/.test(email)) {
-//       setError('Please enter a valid email address.');
-//       return;
-//     }
-//     // Add more client-side validations (phone format, passport format, etc.)
-
-//     try {
-//       const response = await axios.post('/api/candidates', {
-//         firstName,
-//         middleName,
-//         lastName,
-//         email,
-//         password, // Backend will hash this
-//         phoneNumber,
-//         // Construct the full address string for the backend
-//         city: selectedDistrict, // Assuming district can represent city/major area
-//         district: selectedRegion, // Assuming region represents the broader area
-//         streetAddress: streetAddress, // Explicitly send streetAddress
-//         dateOfBirth,
-//         passportNumber,
-//         passportSeries,
-//         role: 'CANDIDATE', // This is set by backend based on user context or specific registration flow
-//       });
-
-//       if (response.status === 201 || response.status === 200) {
-//         setSuccessMessage(
-//           'Registration successful! You will be redirected to login shortly.'
-//         );
-//         setTimeout(() => navigate('/login'), 2000);
-//       }
-//     } catch (err) {
-//       console.error('Registration failed:', err);
-//       if (err.response && err.response.data && err.response.data.error) {
-//         setError(err.response.data.error);
-//       } else {
-//         setError('Registration failed. Please try again or contact support.');
-//       }
-//     }
-//   };
-
-//   return (
-//     // Subtle military-themed background
-//     <div className="relative min-h-screen bg-gradient-to-br from-gray-800 via-gray-900 to-black flex items-center justify-center p-4">
-//       {/* Overlay for better text readability */}
-//       <div className="absolute inset-0 bg-black opacity-40"></div>
-
-//       <div className="relative z-10 w-full max-w-4xl bg-white/10 p-10 rounded-xl shadow-2xl backdrop-blur-sm border border-gray-700">
-//         <h2 className="text-4xl font-extrabold text-center mb-4 text-gray-200">
-//           JOIN OUR RANKS
-//         </h2>
-//         <p className="text-center text-gray-300 mb-8 text-lg font-medium">
-//           Begin your path to service and leadership.
-//         </p>
-
-//         <form onSubmit={handleSubmit} className="space-y-6">
-//           {/* Section 1: Candidate Identification */}
-//           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 border border-gray-600 rounded-lg shadow-inner bg-gray-900/50">
-//             <h3 className="text-2xl font-semibold text-gray-200 mb-4 md:col-span-3 border-b-2 border-gray-600 pb-2">
-//               Identification Details
-//             </h3>
-
-//             {/* First Name */}
-//             <div>
-//               <label
-//                 className="block text-gray-300 text-sm font-bold mb-2"
-//                 htmlFor="firstName"
-//               >
-//                 First Name
-//               </label>
-//               <input
-//                 id="firstName"
-//                 type="text"
-//                 placeholder="e.g. Amir"
-//                 value={firstName}
-//                 onChange={(e) => setFirstName(e.target.value)}
-//                 className="input-field"
-//                 required
-//               />
-//             </div>
-//             {/* Middle Name */}
-//             <div>
-//               <label
-//                 className="block text-gray-300 text-sm font-bold mb-2"
-//                 htmlFor="middleName"
-//               >
-//                 Middle Name (Optional)
-//               </label>
-//               <input
-//                 id="middleName"
-//                 type="text"
-//                 placeholder="e.g.jon"
-//                 value={middleName}
-//                 onChange={(e) => setMiddleName(e.target.value)}
-//                 className="input-field"
-//               />
-//             </div>
-//             {/* Last Name */}
-//             <div>
-//               <label
-//                 className="block text-gray-300 text-sm font-bold mb-2"
-//                 htmlFor="lastName"
-//               >
-//                 Last Name
-//               </label>
-//               <input
-//                 id="lastName"
-//                 type="text"
-//                 placeholder="e.g. Karim"
-//                 value={lastName}
-//                 onChange={(e) => setLastName(e.target.value)}
-//                 className="input-field"
-//                 required
-//               />
-//             </div>
-//           </div>
-
-//           {/* Section 2: Contact & Security */}
-//           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 border border-gray-600 rounded-lg shadow-inner bg-gray-900/50">
-//             <h3 className="text-2xl font-semibold text-gray-200 mb-4 md:col-span-3 border-b-2 border-gray-600 pb-2">
-//               Contact & Security
-//             </h3>
-
-//             {/* Email */}
-//             <div className="md:col-span-2">
-//               <label
-//                 className="block text-gray-300 text-sm font-bold mb-2"
-//                 htmlFor="email"
-//               >
-//                 Email Address
-//               </label>
-//               <input
-//                 id="email"
-//                 type="email"
-//                 placeholder="your.email@example.com"
-//                 value={email}
-//                 onChange={(e) => setEmail(e.target.value)}
-//                 className="input-field"
-//                 required
-//               />
-//             </div>
-//             {/* Phone Number */}
-//             <div className="md:col-span-1">
-//               <label
-//                 className="block text-gray-300 text-sm font-bold mb-2"
-//                 htmlFor="phoneNumber"
-//               >
-//                 Phone Number
-//               </label>
-//               <input
-//                 id="phoneNumber"
-//                 type="tel"
-//                 placeholder="+998 90 123 4567"
-//                 value={phoneNumber}
-//                 onChange={(e) => setPhoneNumber(e.target.value)}
-//                 className="input-field"
-//                 required
-//               />
-//             </div>
-//             {/* Password */}
-//             <div className="md:col-span-1">
-//               <label
-//                 className="block text-gray-300 text-sm font-bold mb-2"
-//                 htmlFor="password"
-//               >
-//                 Password
-//               </label>
-//               <input
-//                 id="password"
-//                 type="password"
-//                 placeholder="Create a strong password"
-//                 value={password}
-//                 onChange={(e) => setPassword(e.target.value)}
-//                 className="input-field"
-//                 required
-//               />
-//             </div>
-//             {/* Confirm Password */}
-//             <div className="md:col-span-1">
-//               <label
-//                 className="block text-gray-300 text-sm font-bold mb-2"
-//                 htmlFor="confirmPassword"
-//               >
-//                 Confirm Password
-//               </label>
-//               <input
-//                 id="confirmPassword"
-//                 type="password"
-//                 placeholder="Confirm your password"
-//                 value={confirmPassword}
-//                 onChange={(e) => setConfirmPassword(e.target.value)}
-//                 className="input-field"
-//                 required
-//               />
-//             </div>
-//           </div>
-
-//           {/* Section 3: Additional Details */}
-//           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 border border-gray-600 rounded-lg shadow-inner bg-gray-900/50">
-//             <h3 className="text-2xl font-semibold text-gray-200 mb-4 md:col-span-3 border-b-2 border-gray-600 pb-2">
-//               Vital Information
-//             </h3>
-
-//             {/* Date of Birth */}
-//             <div className="md:col-span-1">
-//               <label
-//                 className="block text-gray-300 text-sm font-bold mb-2"
-//                 htmlFor="dateOfBirth"
-//               >
-//                 Date of Birth
-//               </label>
-//               <input
-//                 id="dateOfBirth"
-//                 type="date"
-//                 value={dateOfBirth}
-//                 onChange={(e) => setDateOfBirth(e.target.value)}
-//                 className="input-field"
-//                 required
-//               />
-//             </div>
-
-//             {/* Address: Region Selector */}
-//             <div className="md:col-span-1">
-//               <label
-//                 className="block text-gray-300 text-sm font-bold mb-2"
-//                 htmlFor="regionSelect"
-//               >
-//                 Region
-//               </label>
-//               <div className="relative">
-//                 {' '}
-//                 {/* Wrapper for select and arrow */}
-//                 <select
-//                   id="regionSelect"
-//                   value={selectedRegion}
-//                   onChange={(e) => {
-//                     setSelectedRegion(e.target.value);
-//                     setSelectedDistrict('');
-//                     setStreetAddress(''); // Clear street if region/district changes
-//                   }}
-//                   className="input-field appearance-none cursor-pointer pl-3 pr-10"
-//                   required
-//                 >
-//                   <option value="" disabled>
-//                     Select Region
-//                   </option>
-//                   {Object.keys(regionsData).map((region) => (
-//                     <option key={region} value={region}>
-//                       {region}
-//                     </option>
-//                   ))}
-//                 </select>
-//                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
-//                   <svg
-//                     className="fill-current h-4 w-4"
-//                     xmlns="http://www.w3.org/2000/svg"
-//                     viewBox="0 0 20 20"
-//                   >
-//                     <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-//                   </svg>
-//                 </div>
-//               </div>
-//             </div>
-
-//             {/* Address: District Selector */}
-//             <div className="md:col-span-1">
-//               <label
-//                 className="block text-gray-300 text-sm font-bold mb-2"
-//                 htmlFor="districtSelect"
-//               >
-//                 District
-//               </label>
-//               <div className="relative">
-//                 {' '}
-//                 {/* Wrapper for select and arrow */}
-//                 <select
-//                   id="districtSelect"
-//                   value={selectedDistrict}
-//                   onChange={(e) => {
-//                     setSelectedDistrict(e.target.value);
-//                     // Update fullAddress when district is selected, format: "Street, District, Region"
-//                     setStreetAddress(
-//                       `${streetAddress || ''}, ${e.target.value}, ${
-//                         selectedRegion || ''
-//                       }`
-//                     );
-//                   }}
-//                   className={`input-field appearance-none cursor-pointer pl-3 pr-10 ${
-//                     !selectedRegion ? 'bg-gray-700 cursor-not-allowed' : ''
-//                   }`}
-//                   required
-//                   disabled={!selectedRegion}
-//                 >
-//                   <option value="" disabled>
-//                     {!selectedRegion
-//                       ? 'Select Region First'
-//                       : 'Select District'}
-//                   </option>
-//                   {availableDistricts.map((district) => (
-//                     <option key={district} value={district}>
-//                       {district}
-//                     </option>
-//                   ))}
-//                 </select>
-//                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
-//                   <svg
-//                     className="fill-current h-4 w-4"
-//                     xmlns="http://www.w3.org/2000/svg"
-//                     viewBox="0 0 20 20"
-//                   >
-//                     <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-//                   </svg>
-//                 </div>
-//               </div>
-//             </div>
-
-//             {/* Street Address */}
-//             <div className="md:col-span-2">
-//               <label
-//                 className="block text-gray-300 text-sm font-bold mb-2"
-//                 htmlFor="streetAddress"
-//               >
-//                 Street & House Number
-//               </label>
-//               <input
-//                 id="streetAddress"
-//                 type="text"
-//                 placeholder="e.g. 15 Amir Temur Street"
-//                 value={streetAddress}
-//                 onChange={(e) => setStreetAddress(e.target.value)}
-//                 className="input-field"
-//                 required
-//               />
-//             </div>
-
-//             {/* Passport Number */}
-//             <div className="md:col-span-1">
-//               <label
-//                 className="block text-gray-300 text-sm font-bold mb-2"
-//                 htmlFor="passportNumber"
-//               >
-//                 Passport Number
-//               </label>
-//               <input
-//                 id="passportNumber"
-//                 type="text"
-//                 placeholder="Passport No."
-//                 value={passportNumber}
-//                 onChange={(e) => setPassportNumber(e.target.value)}
-//                 className="input-field"
-//                 required
-//               />
-//             </div>
-//             {/* Passport Series */}
-//             <div className="md:col-span-1">
-//               <label
-//                 className="block text-gray-300 text-sm font-bold mb-2"
-//                 htmlFor="passportSeries"
-//               >
-//                 Passport Series
-//               </label>
-//               <input
-//                 id="passportSeries"
-//                 type="text"
-//                 placeholder="e.g. AA1234567"
-//                 value={passportSeries}
-//                 onChange={(e) => setPassportSeries(e.target.value)}
-//                 className="input-field"
-//                 required
-//               />
-//             </div>
-//           </div>
-
-//           {/* Error and Success Messages */}
-//           {error && (
-//             <p className="text-red-500 text-center text-sm mb-4">{error}</p>
-//           )}
-//           {successMessage && (
-//             <p className="text-green-500 text-center text-sm mb-4">
-//               {successMessage}
-//             </p>
-//           )}
-
-//           {/* Submit Button */}
-//           <div className="mt-10">
-//             <button
-//               type="submit"
-//               className="w-full bg-gradient-to-br from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-//             >
-//               REGISTER AND START YOUR JOURNEY
-//             </button>
-//           </div>
-//         </form>
-
-//         {/* Footer Link */}
-//         <p className="text-center text-gray-300 text-sm mt-8">
-//           Already have an account?{' '}
-//           <Link
-//             to="/login"
-//             className="text-blue-400 hover:underline font-semibold"
-//           >
-//             Sign In
-//           </Link>
-//         </p>
-//       </div>
-//     </div>
-//   );
-// };
-
-// // Add these styles to your tailwind.config.js or global CSS file for the .input-field and select styles.
-// // Example for tailwind.config.js (inside theme.extend.plugins or a custom plugin):
-// /*
-
-// */
-
-// export default RegistrationPage;
