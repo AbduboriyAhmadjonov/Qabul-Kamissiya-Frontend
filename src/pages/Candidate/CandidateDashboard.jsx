@@ -1,7 +1,51 @@
-// src/pages/Candidate/CandidateDashboard.jsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+
+const getNextExam = (exams = []) => {
+  if (exams.length === 0) return null;
+  return exams[0];
+};
 
 const CandidateDashboard = () => {
+  const userId = localStorage.getItem('userId');
+  const token = localStorage.getItem('token');
+
+  const [status, setStatus] = useState('');
+  const [docCount, setDocCount] = useState(0);
+  const [nextExam, setNextExam] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const headers = { Authorization: `Bearer ${token}` };
+        // const [profileRes, docsRes, examsRes] = await Promise.all([
+        //   axios.get(`/api/candidates/${userId}`, { headers }),
+        //   axios.get(`/api/candidates/${userId}/documents`, { headers }),
+        //   axios.get(`/api/candidates/${userId}/exams`, { headers }),
+        // ]);
+
+        // setStatus(profileRes.data.applicationStatus);
+        // setDocCount(docsRes.data.length || 0);
+        // setNextExam(getNextExam(examsRes.data));
+      } catch (err) {
+        console.error('Failed to load dashboard data:', err);
+        setError('Could not load dashboard information.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (userId) fetchData();
+  }, [userId]);
+
+  if (loading)
+    return <div className="text-center py-10">Loading dashboard...</div>;
+  if (error)
+    return <div className="text-center py-10 text-red-500">{error}</div>;
+
   return (
     <div className="p-8 bg-white shadow rounded-lg">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">

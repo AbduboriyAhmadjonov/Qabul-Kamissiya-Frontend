@@ -1,10 +1,13 @@
 // src/components/Common/Navbar.jsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import lowercaseDashboard from '../../utils/lowercase';
 
 const Navbar = ({ isAuthenticated, userRole, onLogout }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+
+  console.log(userRole);
 
   const handleLogout = () => {
     onLogout(); // Call the logout function passed from App
@@ -28,7 +31,7 @@ const Navbar = ({ isAuthenticated, userRole, onLogout }) => {
             : userRole === 'ENLISTMENT_OFFICER'
             ? '/officer/dashboard'
             : '/candidate/dashboard',
-        label: `${userRole} Dashboard`,
+        label: `${lowercaseDashboard(userRole)} Dashboard`,
       }
     : null;
 
@@ -37,7 +40,7 @@ const Navbar = ({ isAuthenticated, userRole, onLogout }) => {
       <div className="container mx-auto flex items-center justify-between flex-wrap">
         <div className="flex items-center flex-shrink-0 text-white mr-6">
           <Link to="/" className="text-2xl font-semibold hover:text-gray-300">
-            Uni-Serve
+            O'zbekiston Oliy Qurolli Kuchlari
           </Link>
         </div>
 

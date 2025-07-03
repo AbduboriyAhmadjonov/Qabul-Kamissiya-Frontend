@@ -1,5 +1,5 @@
-import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import lowercase from '../../utils/lowercase.js';
 
 const DashboardSidebar = ({ userRole }) => {
   const navigate = useNavigate(); // For potential logout button if needed here
@@ -29,8 +29,8 @@ const DashboardSidebar = ({ userRole }) => {
           // Add more candidate links here
         ];
       default:
-        return []; // No navigation for unknown roles or if not logged in (though this sidebar is in protected routes)
     }
+    return []; // No navigation for unknown roles or if not logged in (though this sidebar is in protected routes)
   };
 
   const navItems = getNavItems();
@@ -38,7 +38,7 @@ const DashboardSidebar = ({ userRole }) => {
   return (
     <aside className="w-64 bg-gray-800 text-white min-h-screen p-4 flex-shrink-0">
       <div className="text-xl font-bold mb-8 text-center text-gray-200">
-        {userRole} Panel
+        {lowercase(userRole)} Panel
       </div>
       <ul>
         {navItems.map((item, index) => (

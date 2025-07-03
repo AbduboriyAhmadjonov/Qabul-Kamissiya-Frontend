@@ -17,11 +17,9 @@ const HomePage = () => {
         // Fetch Home Page Content
         const pageResponse = await axios.get('/api/pages/public/home');
         setPageContent(pageResponse.data);
-
         // Fetch Universities for showcase
         const universitiesResponse = await axios.get('/api/universities');
         setUniversities(universitiesResponse.data.slice(0, 3)); // Show first 3 for example
-
         setLoading(false);
       } catch (err) {
         console.error('Error fetching home page data:', err);

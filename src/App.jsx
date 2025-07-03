@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   BrowserRouter as Router,
   Routes,
@@ -26,17 +26,20 @@ import ProtectedRoute from './components/Auth/ProtectedRoute.jsx';
 // Pages for Dashboards (You'll create these next)
 // Admin
 import AdminDashboard from './pages/Admin/AdminDashboard.jsx';
-// import ManageCandidatesPage from './pages/Admin/ManageCandidatesPage.jsx';
+import ManageCandidatesPage from './pages/Admin/ManageCandidatesPage.jsx';
+import ManageSitePagesPage from './pages/Admin/ManageSitePagesPage.jsx';
 // ... other admin pages
 
 // Officer
 import OfficerDashboard from './pages/Officer/OfficerDashboard.jsx';
-// import ReviewApplicationsPage from './pages/Officer/ReviewApplicationsPage.jsx';
+import ReviewApplicationsPage from './pages/Officer/ReviewApplicationsPage.jsx';
 // ... other officer pages
 
 // Candidate
 import CandidateDashboard from './pages/Candidate/CandidateDashboard.jsx';
-// ... other candidate pages
+import CandidateProfilePage from './pages/Candidate/CandidateProfilePage.jsx';
+import CandidateDocumentsPage from './pages/Candidate/CandidateDocumentsPage.jsx';
+import CandidateExamsPage from './pages/Candidate/CandidateExamsPage.jsx';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -47,6 +50,9 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     const role = localStorage.getItem('role');
+
+    console.log(token);
+    console.log(role);
     if (token && role) {
       setIsAuthenticated(true);
       setUserRole(role);
@@ -176,6 +182,49 @@ function App() {
             </ProtectedRoute>
           }
         />
+        {/* ADDED */}
+        <Route
+          path="/candidate/profile"
+          element={
+            <ProtectedRoute
+              allowedRoles={['CANDIDATE']}
+              isAuthenticated={isAuthenticated}
+              userRole={userRole}
+            >
+              <CandidateLayout userRole={userRole} onLogout={handleLogout}>
+                <CandidateProfilePage />
+              </CandidateLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/candidate/documents"
+          element={
+            <ProtectedRoute
+              allowedRoles={['CANDIDATE']}
+              isAuthenticated={isAuthenticated}
+              userRole={userRole}
+            >
+              <CandidateLayout userRole={userRole} onLogout={handleLogout}>
+                <CandidateDocumentsPage />
+              </CandidateLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/candidate/exams"
+          element={
+            <ProtectedRoute
+              allowedRoles={['CANDIDATE']}
+              isAuthenticated={isAuthenticated}
+              userRole={userRole}
+            >
+              <CandidateLayout userRole={userRole} onLogout={handleLogout}>
+                <CandidateExamsPage />
+              </CandidateLayout>
+            </ProtectedRoute>
+          }
+        />
         {/* Add more candidate-specific routes here */}
         {/* Officer Dashboard Routes */}
         <Route
@@ -202,7 +251,7 @@ function App() {
               userRole={userRole}
             >
               <AdminLayout userRole={userRole} onLogout={handleLogout}>
-                {/* <ReviewApplicationsPage /> */}
+                <ReviewApplicationsPage />
               </AdminLayout>{' '}
               {/* Using AdminLayout for now */}
             </ProtectedRoute>
@@ -233,7 +282,21 @@ function App() {
               userRole={userRole}
             >
               <AdminLayout userRole={userRole} onLogout={handleLogout}>
-                {/* <ManageCandidatesPage /> */}
+                <ManageCandidatesPage />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/pages"
+          element={
+            <ProtectedRoute
+              allowedRoles={['ADMIN']}
+              isAuthenticated={isAuthenticated}
+              userRole={userRole}
+            >
+              <AdminLayout userRole={userRole} onLogout={handleLogout}>
+                <ManageSitePagesPage />
               </AdminLayout>
             </ProtectedRoute>
           }
